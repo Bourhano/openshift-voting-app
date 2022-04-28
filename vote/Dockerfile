@@ -7,8 +7,10 @@ RUN apt-get update \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-RUN adduser worker
-USER worker
+RUN groupadd -r swuser -g 433 && \
+    useradd -u 431 -r -g swuser -s /sbin/nologin -c "Docker image user" swuser
+
+USER root
 # Set the application directory
 WORKDIR /app
 
@@ -22,6 +24,6 @@ COPY --chown=worker:worker . .
 # Make port 80 available for links and/or publish
 EXPOSE 80
 
-USER root
+USER swuser
 # Define our command to be run when launching the container
 CMD ["gunicorn", "app:app", "-b", "0.0.0.0:80", "--log-file", "-", "--access-logfile", "-", "--workers", "4", "--keep-alive", "0"]
