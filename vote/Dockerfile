@@ -7,15 +7,17 @@ RUN apt-get update \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
+RUN adduser worker
+USER worker
 # Set the application directory
 WORKDIR /app
 
 # Install our requirements.txt
-COPY requirements.txt /app/requirements.txt
+COPY --chown=worker:worker requirements.txt /app/requirements.txt
 RUN pip install -r requirements.txt
 
 # Copy our code from the current folder to /app inside the container
-COPY . .
+COPY --chown=worker:worker . .
 
 # Make port 80 available for links and/or publish
 EXPOSE 80
